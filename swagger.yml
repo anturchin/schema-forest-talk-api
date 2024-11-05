@@ -1,0 +1,817 @@
+openapi: 3.0.0
+info:
+  title: Social Media API
+  version: 1.0.0
+  description: API для социального приложения с функциями аутентификации, управления пользователями, постами, галереей и сообществами
+
+tags:
+  - name: Авторизация
+    description: Маршруты, связанные с аутентификацией и регистрацией пользователей
+  - name: Пользователи
+    description: Маршруты для управления пользователями
+  - name: Галерея пользователя
+    description: Маршруты для управления галереей пользователей
+  - name: Профиль пользователя
+    description: Маршруты для управления настройками профиля
+  - name: Друзья/Подписчики
+    description: Маршруты для управления друзьями и подписчиками
+  - name: Посты
+    description: Маршруты для управления постами
+  - name: Медиа к постам
+    description: Маршруты для управления медиафайлами к постам
+  - name: Комментарии к постам
+    description: Маршруты для управления комментариями к постам
+  - name: Лайки к постам
+    description: Маршруты для управления лайками к постам
+  - name: Кoмментарии
+    description: Маршруты для управления комментариями к постам
+  - name: Сообщества
+    description: Маршруты для управления сообществами
+  - name: Участники сообщества
+    description: Маршруты для управления участниками сообществ
+  - name: Настройки сообщества
+    description: Маршруты для управления настройками сообществ
+  - name: Лента новостей
+    description: Маршруты для получения новостной ленты
+
+paths:
+  /api/auth/check-email:
+    get:
+      summary: Проверить email пользователя
+      tags:
+        - Авторизация
+      parameters:
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Email доступен или занят
+
+  /api/auth/register:
+    post:
+      summary: Регистрация нового пользователя
+      tags:
+        - Авторизация
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Пользователь зарегистрирован
+
+  /api/auth/login:
+    post:
+      summary: Логин пользователя
+      tags:
+        - Авторизация
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Успешная аутентификация
+
+  /api/auth/refresh:
+    post:
+      summary: Обновить JWT токен
+      tags:
+        - Авторизация
+      responses:
+        '200':
+          description: Новый токен получен
+
+  /api/auth/logout:
+    post:
+      summary: Выход пользователя
+      tags:
+        - Авторизация
+      responses:
+        '204':
+          description: Токен инвалидирован
+
+  /api/users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Получить данные пользователя по ID
+      tags:
+        - Пользователи
+      responses:
+        '200':
+          description: Данные пользователя успешно получены
+        '404':
+          description: Пользователь не найден
+
+    patch:
+      summary: Обновить данные пользователя по ID
+      tags:
+        - Пользователи
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+      responses:
+        '200':
+          description: Данные пользователя успешно обновлены
+        '400':
+          description: Некорректные данные
+        '404':
+          description: Пользователь не найден
+
+    delete:
+      summary: Удалить пользователя по ID
+      tags:
+        - Пользователи
+      responses:
+        '204':
+          description: Пользователь успешно удален
+        '404':
+          description: Пользователь не найден
+
+  /api/users:
+    post:
+      summary: Создать нового пользователя
+      tags:
+        - Пользователи
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+      responses:
+        '201':
+          description: Пользователь успешно создан
+        '400':
+          description: Некорректные данные
+
+  /api/users/{id}/gallery:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Получить список изображений пользователя
+      tags:
+        - Галерея пользователя
+      responses:
+        '200':
+          description: Список изображений успешно получен
+        '404':
+          description: Пользователь не найден
+
+    post:
+      summary: Добавить изображение в галерею пользователя
+      tags:
+        - Галерея пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                imageUrl:
+                  type: string
+      responses:
+        '201':
+          description: Изображение успешно добавлено в галерею
+        '400':
+          description: Некорректные данные
+
+  /api/users/{id}/gallery/{imageId}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: imageId
+        in: path
+        required: true
+        schema:
+          type: string
+    delete:
+      summary: Удалить изображение из галереи пользователя по ID
+      tags:
+        - Галерея пользователя
+      responses:
+        '204':
+          description: Изображение успешно удалено
+        '404':
+          description: Изображение или пользователь не найден
+
+  /api/users/{id}/profile:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Получить настройки профиля пользователя
+      tags:
+        - Профиль пользователя
+      responses:
+        '200':
+          description: Настройки профиля успешно получены
+        '404':
+          description: Пользователь не найден
+
+    patch:
+      summary: Обновить настройки профиля пользователя
+      tags:
+        - Профиль пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                bio:
+                  type: string
+      responses:
+        '200':
+          description: Настройки профиля успешно обновлены
+        '400':
+          description: Некорректные данные
+        '404':
+          description: Пользователь не найден
+
+  /api/users/{id}/friends:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Получить список друзей пользователя
+      tags:
+        - Друзья/Подписчики
+      responses:
+        '200':
+          description: Список друзей успешно получен
+        '404':
+          description: Пользователь не найден
+
+    post:
+      summary: Отправить запрос на добавление в друзья
+      tags:
+        - Друзья/Подписчики
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                friend_id:
+                  type: string
+                  description: ID пользователя, которого нужно добавить в друзья
+      responses:
+        '201':
+          description: Запрос на добавление в друзья успешно отправлен
+        '404':
+          description: Пользователь не найден
+
+  /api/users/{id}/subscribers:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Получить список подписчиков пользователя
+      tags:
+        - Друзья/Подписчики
+      responses:
+        '200':
+          description: Список подписчиков успешно получен
+        '404':
+          description: Пользователь не найден
+
+  /api/users/{id}/friends/{friend_id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: friend_id
+        in: path
+        required: true
+        schema:
+          type: string
+    patch:
+      summary: Обновить статус дружбы (принять/отклонить запрос)
+      tags:
+        - Друзья/Подписчики
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [accepted, declined]
+                  description: Статус дружбы (принять или отклонить запрос)
+      responses:
+        '200':
+          description: Статус дружбы успешно обновлен
+        '404':
+          description: Пользователь или друг не найден
+        '400':
+          description: Некорректный статус
+
+  /api/posts/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Получить пост по ID
+      tags:
+        - Посты
+      responses:
+        '200':
+          description: Пост успешно получен
+        '404':
+          description: Пост не найден
+
+    patch:
+      summary: Обновить пост
+      tags:
+        - Посты
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  description: Новый контент поста
+      responses:
+        '200':
+          description: Пост успешно обновлен
+        '404':
+          description: Пост не найден
+
+    delete:
+      summary: Удалить пост
+      tags:
+        - Посты
+      responses:
+        '204':
+          description: Пост успешно удален
+        '404':
+          description: Пост не найден
+
+  /api/posts:
+    post:
+      summary: Создать новый пост
+      tags:
+        - Медиа к постам
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  description: Контент нового поста
+      responses:
+        '201':
+          description: Пост успешно создан
+
+  /api/posts/{id}/media:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      summary: Добавить медиафайл к посту
+      tags:
+        - Медиа к постам
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Медиафайл для загрузки
+      responses:
+        '201':
+          description: Медиафайл успешно добавлен
+        '404':
+          description: Пост не найден
+
+  /api/posts/{id}/media/{media_id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: media_id
+        in: path
+        required: true
+        schema:
+          type: string
+    delete:
+      summary: Удалить медиафайл с поста
+      tags:
+        - Медиа к постам
+      responses:
+        '204':
+          description: Медиафайл успешно удален
+        '404':
+          description: Медиафайл или пост не найдены
+
+  /api/posts/{post_id}/comments:
+    parameters:
+      - name: post_id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Получить комментарии поста
+      tags:
+        - Комментарии к постам
+      responses:
+        '200':
+          description: Список комментариев поста
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    content:
+                      type: string
+                    created_at:
+                      type: string
+                      format: date-time
+    post:
+      summary: Добавить комментарий к посту
+      tags:
+        - Комментарии к постам
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  description: Содержимое комментария
+      responses:
+        '201':
+          description: Комментарий успешно добавлен
+        '404':
+          description: Пост не найден
+
+  /api/comments/{comment_id}:
+    parameters:
+      - name: comment_id
+        in: path
+        required: true
+        schema:
+          type: string
+    patch:
+      summary: Обновить комментарий
+      tags:
+        - Кoмментарии
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  description: Обновленное содержимое комментария
+      responses:
+        '200':
+          description: Комментарий успешно обновлен
+        '404':
+          description: Комментарий не найден
+    delete:
+      summary: Удалить комментарий
+      tags:
+        - Кoмментарии
+      responses:
+        '204':
+          description: Комментарий успешно удален
+        '404':
+          description: Комментарий не найден
+  
+  /api/posts/{post_id}/likes:
+    parameters:
+      - name: post_id
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      summary: Добавить лайк к посту
+      tags:
+        - Лайки к постам
+      responses:
+        '201':
+          description: Лайк успешно добавлен
+        '404':
+          description: Пост не найден
+
+  /api/posts/{post_id}/likes/{like_id}:
+    parameters:
+      - name: post_id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: like_id
+        in: path
+        required: true
+        schema:
+          type: string
+    delete:
+      summary: Удалить лайк с поста
+      tags:
+        - Лайки к постам
+      responses:
+        '204':
+          description: Лайк успешно удален
+        '404':
+          description: Лайк не найден или пост не найден
+
+  /api/communities:
+    get:
+      summary: Получить список сообществ
+      tags:
+        - Сообщества
+      responses:
+        '200':
+          description: Список сообществ успешно получен
+
+    post:
+      summary: Создать новое сообщество
+      tags:
+        - Сообщества
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '201':
+          description: Сообщество успешно создано
+
+  /api/communities/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Получить данные сообщества по ID
+      tags:
+        - Сообщества
+      responses:
+        '200':
+          description: Данные сообщества успешно получены
+        '404':
+          description: Сообщество не найдено
+
+    patch:
+      summary: Обновить данные сообщества по ID
+      tags:
+        - Сообщества
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Сообщество успешно обновлено
+        '404':
+          description: Сообщество не найдено
+
+    delete:
+      summary: Удалить сообщество по ID
+      tags:
+        - Сообщества
+      responses:
+        '204':
+          description: Сообщество успешно удалено
+        '404':
+          description: Сообщество не найдено
+
+  /api/communities/{id}/members:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Получить список участников сообщества
+      tags:
+        - Участники сообщества
+      responses:
+        '200':
+          description: Список участников сообщества успешно получен
+
+    post:
+      summary: Добавить участника в сообщество
+      tags:
+        - Участники сообщества
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+      responses:
+        '201':
+          description: Участник успешно добавлен в сообщество
+
+  /api/communities/{id}/members/{user_id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: user_id
+        in: path
+        required: true
+        schema:
+          type: string
+    patch:
+      summary: Обновить роль участника в сообществе
+      tags:
+        - Участники сообщества
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+                  enum: [admin, moderator, member]
+      responses:
+        '200':
+          description: Роль участника успешно обновлена
+        '404':
+          description: Участник или сообщество не найдены
+
+    delete:
+      summary: Удалить участника из сообщества
+      tags:
+        - Участники сообщества
+      responses:
+        '204':
+          description: Участник успешно удален из сообщества
+        '404':
+          description: Участник или сообщество не найдены
+
+  /api/communities/{id}/settings:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Получить настройки сообщества
+      tags:
+        - Настройки сообщества
+      responses:
+        '200':
+          description: Настройки сообщества успешно получены
+
+    patch:
+      summary: Обновить настройки сообщества
+      tags:
+        - Настройки сообщества
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                settings:
+                  type: object
+                  additionalProperties: true
+      responses:
+        '200':
+          description: Настройки сообщества успешно обновлены
+        '404':
+          description: Сообщество не найдено
+
+  /api/feed:
+    get:
+      summary: Получить список постов всех сообществ/друзей
+      tags:
+        - Лента новостей
+      responses:
+        '200':
+          description: Список постов успешно получен
+
+  /api/feed/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Получить список постов отдельных сообществ/друзей
+      tags:
+        - Лента новостей
+      responses:
+        '200':
+          description: Список постов отдельного сообщества/друга успешно получен
+        '404':
+          description: Сообщество или пользователь не найден
+          
